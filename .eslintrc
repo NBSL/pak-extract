@@ -1,6 +1,10 @@
 {
   "extends": [
     "oclif",
-    "oclif-typescript"
-  ]
+    "oclif-typescript",
+    "standard-with-typescript"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  }
 }

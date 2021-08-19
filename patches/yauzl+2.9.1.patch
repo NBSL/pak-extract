@@ -1,0 +1,270 @@
+diff --git a/node_modules/yauzl/.gitignore b/node_modules/yauzl/.gitignore
+old mode 100644
+new mode 100755
+index ccc2930..ba1d8f0
+diff --git a/node_modules/yauzl/.travis.yml b/node_modules/yauzl/.travis.yml
+old mode 100644
+new mode 100755
+index fc448ba..48e0c94
+diff --git a/node_modules/yauzl/LICENSE b/node_modules/yauzl/LICENSE
+old mode 100644
+new mode 100755
+index 37538d4..182ea6f
+diff --git a/node_modules/yauzl/README.md b/node_modules/yauzl/README.md
+old mode 100644
+new mode 100755
+index 88dd856..f95a354
+diff --git a/node_modules/yauzl/examples/dump.js b/node_modules/yauzl/examples/dump.js
+old mode 100644
+new mode 100755
+index b1437bc..3bfa4e9
+diff --git a/node_modules/yauzl/examples/promises.js b/node_modules/yauzl/examples/promises.js
+old mode 100644
+new mode 100755
+index 35370c4..612084d
+diff --git a/node_modules/yauzl/examples/unzip.js b/node_modules/yauzl/examples/unzip.js
+old mode 100644
+new mode 100755
+index f60bf8d..1967bea
+diff --git a/node_modules/yauzl/index.js b/node_modules/yauzl/index.js
+old mode 100644
+new mode 100755
+index 2ad5db4..ddd1636
+--- a/node_modules/yauzl/index.js
++++ b/node_modules/yauzl/index.js
+@@ -118,6 +118,7 @@ function fromRandomAccessReader(reader, totalSize, options, callback) {
+       // 6 - Disk where central directory starts
+       // 8 - Number of central directory records on this disk
+       // 10 - Total number of central directory records
++      var totalCount = eocdrBuffer.readUInt16LE(8);
+       var entryCount = eocdrBuffer.readUInt16LE(10);
+       // 12 - Size of central directory (bytes)
+       // 16 - Offset of start of central directory, relative to start of archive
+@@ -131,9 +132,14 @@ function fromRandomAccessReader(reader, totalSize, options, callback) {
+       // 22 - Comment
+       // the encoding is always cp437.
+       var comment = decodeStrings ? decodeBuffer(eocdrBuffer, 22, eocdrBuffer.length, false)
+-                                  : eocdrBuffer.slice(22);
++        : eocdrBuffer.slice(22);
+ 
+-      if (!(entryCount === 0xffff || centralDirectoryOffset === 0xffffffff)) {
++
++      if (options.validateEntrySizes === false && entryCount === 0xffff && totalCount === 0xffff || centralDirectoryOffset === 0xffffffff) {
++            return callback(null, new ZipFile(reader, centralDirectoryOffset, totalSize, entryCount, comment, options.autoClose, options.lazyEntries, decodeStrings, options.validateEntrySizes));
++      }
++
++      if (!(entryCount === 0xffff && totalCount === 0xffff || centralDirectoryOffset === 0xffffffff)) {
+         return callback(null, new ZipFile(reader, centralDirectoryOffset, totalSize, entryCount, comment, options.autoClose, options.lazyEntries, decodeStrings, options.validateEntrySizes));
+       }
+ 
+diff --git a/node_modules/yauzl/test/big-compression.zip b/node_modules/yauzl/test/big-compression.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/absolute path C xt.zip b/node_modules/yauzl/test/failure/absolute path C xt.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/absolute path atxt.zip b/node_modules/yauzl/test/failure/absolute path atxt.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/compressed uncompressed size mismatch for stored file 2147483647 5.zip b/node_modules/yauzl/test/failure/compressed uncompressed size mismatch for stored file 2147483647 5.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/end of central directory record signature not found.zip b/node_modules/yauzl/test/failure/end of central directory record signature not found.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/end of central directory record signature not found_1.zip b/node_modules/yauzl/test/failure/end of central directory record signature not found_1.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/expected zip64 extended information extra field.zip b/node_modules/yauzl/test/failure/expected zip64 extended information extra field.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/extra field length exceeds extra field buffer size.zip b/node_modules/yauzl/test/failure/extra field length exceeds extra field buffer size.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/file data overflows file bounds 63 2147483647 308.zip b/node_modules/yauzl/test/failure/file data overflows file bounds 63 2147483647 308.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/invalid central directory file header signature 0x1014b50.zip b/node_modules/yauzl/test/failure/invalid central directory file header signature 0x1014b50.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/invalid characters in fileName a txt.zip b/node_modules/yauzl/test/failure/invalid characters in fileName a txt.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/invalid code lengths set.zip b/node_modules/yauzl/test/failure/invalid code lengths set.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/invalid comment length expected 1 found 0.zip b/node_modules/yauzl/test/failure/invalid comment length expected 1 found 0.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/invalid local file header signature 0x3034b50.zip b/node_modules/yauzl/test/failure/invalid local file header signature 0x3034b50.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/invalid relative path xt.zip b/node_modules/yauzl/test/failure/invalid relative path xt.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/invalid zip64 end of central directory locator signature.zip b/node_modules/yauzl/test/failure/invalid zip64 end of central directory locator signature.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/invalid zip64 end of central directory record signature.zip b/node_modules/yauzl/test/failure/invalid zip64 end of central directory record signature.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/multi-disk zip files are not supported found disk number 1.zip b/node_modules/yauzl/test/failure/multi-disk zip files are not supported found disk number 1.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/not enough bytes in the stream expected 2048576 got only 1000000.zip b/node_modules/yauzl/test/failure/not enough bytes in the stream expected 2048576 got only 1000000.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/strong encryption is not supported.zip b/node_modules/yauzl/test/failure/strong encryption is not supported.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/too many bytes in the stream expected 82496 got at least 98304.zip b/node_modules/yauzl/test/failure/too many bytes in the stream expected 82496 got at least 98304.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/too many length or distance symbols.zip b/node_modules/yauzl/test/failure/too many length or distance symbols.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/unsupported compression method 1.zip b/node_modules/yauzl/test/failure/unsupported compression method 1.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/zip64 extended information extra field does not include compressed size.zip b/node_modules/yauzl/test/failure/zip64 extended information extra field does not include compressed size.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/zip64 extended information extra field does not include relative header offset.zip b/node_modules/yauzl/test/failure/zip64 extended information extra field does not include relative header offset.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/failure/zip64 extended information extra field does not include uncompressed size.zip b/node_modules/yauzl/test/failure/zip64 extended information extra field does not include uncompressed size.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/range-test.js b/node_modules/yauzl/test/range-test.js
+old mode 100644
+new mode 100755
+index ab12467..cbb8d24
+diff --git a/node_modules/yauzl/test/success/cygwin-info-zip.zip b/node_modules/yauzl/test/success/cygwin-info-zip.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/cygwin-info-zip/a.txt b/node_modules/yauzl/test/success/cygwin-info-zip/a.txt
+old mode 100644
+new mode 100755
+index 8bd6648..a98bf35
+diff --git a/node_modules/yauzl/test/success/cygwin-info-zip/b.txt b/node_modules/yauzl/test/success/cygwin-info-zip/b.txt
+old mode 100644
+new mode 100755
+index 302b0b8..ae94623
+diff --git a/node_modules/yauzl/test/success/deflate.zip b/node_modules/yauzl/test/success/deflate.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/deflate/index.js b/node_modules/yauzl/test/success/deflate/index.js
+old mode 100644
+new mode 100755
+index 35137ea..147511a
+diff --git a/node_modules/yauzl/test/success/directories.zip b/node_modules/yauzl/test/success/directories.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/directories/a/a.txt b/node_modules/yauzl/test/success/directories/a/a.txt
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/directories/b/.git_please_make_this_directory b/node_modules/yauzl/test/success/directories/b/.git_please_make_this_directory
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/empty.zip b/node_modules/yauzl/test/success/empty.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/empty/.git_please_make_this_directory b/node_modules/yauzl/test/success/empty/.git_please_make_this_directory
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/linux-info-zip.zip b/node_modules/yauzl/test/success/linux-info-zip.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/linux-info-zip/a.txt b/node_modules/yauzl/test/success/linux-info-zip/a.txt
+old mode 100644
+new mode 100755
+index 8bd6648..a98bf35
+diff --git a/node_modules/yauzl/test/success/linux-info-zip/b.txt b/node_modules/yauzl/test/success/linux-info-zip/b.txt
+old mode 100644
+new mode 100755
+index 302b0b8..ae94623
+diff --git a/node_modules/yauzl/test/success/traditional-encryption-and-compression.zip b/node_modules/yauzl/test/success/traditional-encryption-and-compression.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/traditional-encryption-and-compression/a.bin b/node_modules/yauzl/test/success/traditional-encryption-and-compression/a.bin
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/traditional-encryption.zip b/node_modules/yauzl/test/success/traditional-encryption.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/traditional-encryption/a.txt b/node_modules/yauzl/test/success/traditional-encryption/a.txt
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/unicode-path-extra-field.zip b/node_modules/yauzl/test/success/unicode-path-extra-field.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/unicode-path-extra-field/qi ge fangjian.txt b/node_modules/yauzl/test/success/unicode-path-extra-field/qi ge fangjian.txt
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/unicode.zip b/node_modules/yauzl/test/success/unicode.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/unicode/Turmion Katilot/Hoitovirhe/Rautaketju.mp3 b/node_modules/yauzl/test/success/unicode/Turmion Katilot/Hoitovirhe/Rautaketju.mp3
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/unicode/Turmion Katilot/Pirun nyrkki/Mista veri pakenee.mp3 b/node_modules/yauzl/test/success/unicode/Turmion Katilot/Pirun nyrkki/Mista veri pakenee.mp3
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/windows-7-zip/a.txt b/node_modules/yauzl/test/success/windows-7-zip/a.txt
+old mode 100644
+new mode 100755
+index 8bd6648..a98bf35
+diff --git a/node_modules/yauzl/test/success/windows-7-zip/b.txt b/node_modules/yauzl/test/success/windows-7-zip/b.txt
+old mode 100644
+new mode 100755
+index 302b0b8..ae94623
+diff --git a/node_modules/yauzl/test/success/windows-compressed-folder/a.txt b/node_modules/yauzl/test/success/windows-compressed-folder/a.txt
+old mode 100644
+new mode 100755
+index 8bd6648..a98bf35
+diff --git a/node_modules/yauzl/test/success/windows-compressed-folder/b.txt b/node_modules/yauzl/test/success/windows-compressed-folder/b.txt
+old mode 100644
+new mode 100755
+index 302b0b8..ae94623
+diff --git a/node_modules/yauzl/test/success/zip64.zip b/node_modules/yauzl/test/success/zip64.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/zip64/test1.txt b/node_modules/yauzl/test/success/zip64/test1.txt
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/success/zip64/test2.txt b/node_modules/yauzl/test/success/zip64/test2.txt
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/test.js b/node_modules/yauzl/test/test.js
+old mode 100644
+new mode 100755
+index cdbf9d7..ed298ec
+diff --git a/node_modules/yauzl/test/wrong-entry-sizes/wrong-entry-sizes.zip b/node_modules/yauzl/test/wrong-entry-sizes/wrong-entry-sizes.zip
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/wrong-entry-sizes/wrong-entry-sizes/a.txt b/node_modules/yauzl/test/wrong-entry-sizes/wrong-entry-sizes/a.txt
+old mode 100644
+new mode 100755
+index c15979a..ee4ba52
+diff --git a/node_modules/yauzl/test/wrong-entry-sizes/wrong-entry-sizes/b.txt b/node_modules/yauzl/test/wrong-entry-sizes/wrong-entry-sizes/b.txt
+old mode 100644
+new mode 100755
+index e44bf34..9523e06
+diff --git a/node_modules/yauzl/test/wrong-entry-sizes/wrong-entry-sizes/c/.git_please_make_this_directory b/node_modules/yauzl/test/wrong-entry-sizes/wrong-entry-sizes/c/.git_please_make_this_directory
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/test/zip64.js b/node_modules/yauzl/test/zip64.js
+old mode 100644
+new mode 100755
+index 50e6f43..b450625
+diff --git a/node_modules/yauzl/test/zip64/zip64.zip_fragment b/node_modules/yauzl/test/zip64/zip64.zip_fragment
+old mode 100644
+new mode 100755
+diff --git a/node_modules/yauzl/tools/hex2bin.js b/node_modules/yauzl/tools/hex2bin.js
+old mode 100644
+new mode 100755
+index 9362f9a..e861bf7
+diff --git a/node_modules/yauzl/tools/hexdump-zip.js b/node_modules/yauzl/tools/hexdump-zip.js
+old mode 100644
+new mode 100755
+index 71b16e5..f0fbf57

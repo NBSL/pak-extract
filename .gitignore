@@ -10,3 +10,4 @@ node_modules
 *.dll
 *.log
 /build
+*.7z

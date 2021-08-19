@@ -1,36 +1,80 @@
+/* eslint-disable indent */
 /* eslint-disable new-cap */
-import * as ffi from 'ffi-napi'
-import * as ref from 'ref-napi'
-import { platform, env, cwd } from 'process'
-import * as path from 'path'
+import * as ffi from "ffi-napi";
+import * as ref from "ref-napi";
+import { platform, env, cwd } from "process";
+import * as path from "path";
 
 // https://github.com/chrsm/x/blob/master/destiny/oodle/oodle_win.go For function exports
 
 export function OodleLib() {
-  if (platform !== 'win32' && platform !== 'linux') throw new Error(`${platform} is currently unsupported.`)
+  if (platform !== "win32" && platform !== "linux")
+    throw new Error(`${platform} is currently unsupported.`);
 
-  const dllPath = env.OODLE_LIBRARY_PATH || cwd()
+  const dllPath = env.OODLE_LIBRARY_PATH || cwd();
 
-  const srcPtr = ref.refType(ref.types.void)
-  const outPtr = ref.refType(ref.types.void)
+  const srcPtr = ref.refType(ref.types.void);
+  const outPtr = ref.refType(ref.types.void);
 
-  const platformLibrary = {
-    win32: path.join(dllPath, './oo2core_8_win64.dll'),
-    linux: path.join(dllPath, './liblinoodle.so'),
+  // const platformLibrary = {
+  //   win32: path.join(dllPath, './oo2core_8_win64.dll'),
+  //   linux: path.join(dllPath, './liblinoodle.so'),
+  // }
+
+  switch (platform) {
+    case "linux":
+      // return ffi.Library(path.join(dllPath, './liboodle.so'), {
+      //   _Z17Kraken_DecompressPKhmPhm: ['int', [srcPtr, 'int', outPtr, 'int']],
+      // })
+      return ffi.Library(path.join(dllPath, "./liblinoodle.so"), {
+        OodleLZ_Decompress: [
+          "int",
+          [
+            srcPtr,
+            "int",
+            outPtr,
+            "int",
+            "uint",
+            "uint",
+            "long",
+            "uint",
+            "uint",
+            "uint",
+            "uint",
+            "uint",
+            "uint",
+            "uint",
+          ],
+        ],
+      });
+    case "win32":
+    default:
+      return ffi.Library(path.join(dllPath, "./oo2core_8_win64.dll"), {
+        OodleLZ_Decompress: [
+          "int",
+          [
+            srcPtr,
+            "int",
+            outPtr,
+            "int",
+            "uint",
+            "uint",
+            "long",
+            "uint",
+            "uint",
+            "uint",
+            "uint",
+            "uint",
+            "uint",
+            "uint",
+          ],
+        ],
+        OodleLZ_Compress: [
+          "char",
+          ["byte", "int", "byte", "int", "uint", "uint", "uint"],
+        ],
+      });
   }
-  return ffi.Library(platformLibrary[platform], {
-    OodleLZ_Decompress: ['int', [srcPtr, 'int', outPtr, 'int', 'uint', 'uint', 'long', 'uint', 'uint', 'uint', 'uint', 'uint', 'uint', 'uint']],
-    // 'OodleLZ_Compress': ['char', ['byte', 'int', 'byte', 'int', 'uint', 'uint', 'uint']],
-    // 'Oodle_GetConfigValues': [_void, [_void]],
-    // 'Oodle_SetConfigValues': [_void, [_void]],
-    // 'OodleLZ_Compressor_GetName': ['int', ['int']],
-    // 'OodleNetwork1_Shared_SetWindow': [_void, [_void, int, _void, int]],
-    // 'OodleNetwork1_Shared_Size': [int, [int]],
-    // 'OodleNetwork1TCP_Decode': [int, [_void, _void, _void, int, _void, int]],
-    // 'OodleNetwork1TCP_Encode': [int, [_void, _void, _void, int, _void]],
-    // 'OodleNetwork1TCP_State_Size': [int, []],
-    // 'OodleNetwork1UDP_State_Uncompact': [_void, [_void, _void]],
-  })
 }
 
 // export const OozLib = ffi.Library(path.join(dllPath, 'libooz'), {

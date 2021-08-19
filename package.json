@@ -1,7 +1,7 @@
 {
   "name": "pak-extract",
   "description": "Pak Extractor for Oodle Compressed paks",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "author": "NBSL",
   "bugs": "https://github.com/NBSL/pak-extract/issues",
   "bin": {
@@ -11,9 +11,12 @@
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "cli-progress": "^3.8.2",
-    "ffi-napi": "^3.0.1",
+    "crc": "^3.8.0",
+    "ffi-napi": "^3.1.0",
     "fs-extra": "^9.0.1",
     "inquirer": "^7.3.3",
+    "patch-package": "^6.2.2",
+    "postinstall-postinstall": "^2.1.0",
     "ref-napi": "^3.0.1",
     "tslib": "^2.0.3",
     "yauzl": "https://github.com/thejoshwolfe/yauzl.git#decode-file-data"
@@ -24,6 +27,7 @@
     "@oclif/test": "^1.2.7",
     "@types/chai": "^4.2.14",
     "@types/cli-progress": "^3.8.0",
+    "@types/crc": "^3.4.0",
     "@types/ffi-napi": "^2.4.3",
     "@types/fs-extra": "^9.0.4",
     "@types/inquirer": "^7.3.1",
@@ -31,15 +35,22 @@
     "@types/node": "^14.14.9",
     "@types/ref-napi": "^1.4.1",
     "@types/yauzl": "^2.9.1",
+    "@typescript-eslint/eslint-plugin": "4",
     "chai": "^4.2.0",
-    "eslint": "^7.14.0",
+    "eslint": "7",
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-oclif-typescript": "^0.2.0",
+    "eslint-config-standard-with-typescript": "^19.0.1",
+    "eslint-plugin-import": "2",
+    "eslint-plugin-node": "11",
+    "eslint-plugin-promise": "4",
+    "eslint-plugin-standard": "4",
     "globby": "^11.0.1",
     "mocha": "^8.2.1",
     "nyc": "^15.1.0",
-    "pkg": "kkoomen/pkg",
+    "pkg": "github:kkoomen/pkg",
     "rimraf": "^3.0.2",
+    "segfault-handler": "^1.3.0",
     "ts-node": "^9.0.0",
     "typescript": "^4.1.2"
   },
@@ -48,11 +59,12 @@
       "lib/**/*.js"
     ],
     "assets": [
-      "./node_modules/ffi-napi/prebuilds/**/*",
-      "./node_modules/ffi-napi/node_modules/ref-napi/prebuilds/**/*",
-      "./node_modules/ref-napi/prebuilds/**/*",
-      "./node_modules/ref-wchar-napi/prebuilds/**/*",
-      "./node_modules/ref-wchar-napi/node_modules/ref-napi/prebuilds/**/*"
+      "node_modules/ffi-napi/prebuilds/**/*",
+      "node_modules/ffi-napi/node_modules/ref-napi/prebuilds/**/*",
+      "node_modules/ref-napi/prebuilds/**/*",
+      "node_modules/ref-wchar-napi/prebuilds/**/*",
+      "node_modules/ref-wchar-napi/node_modules/ref-napi/prebuilds/**/*",
+      "node_modules/segfault-handler/build/Release/*.node"
     ]
   },
   "engines": {
@@ -81,9 +93,10 @@
     "postpack": "rimraf -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack": "rimraf -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "postinstall": "patch-package",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
-    "pkg:linux": "rimraf build/linux && yarn prepack && pkg . -t node12-linux-x64 --out-path ./build/linux",
-    "pkg:win": "rimraf build/win && yarn prepack && pkg . -t node12-win-x64 --out-path ./build/win"
+    "pkg:linux": "rimraf build/linux && yarn prepack && pkg . -t node14-linux-x64 --out-path ./build/linux",
+    "pkg:win": "rimraf build/win && yarn prepack && pkg . -t node14-win-x64 --out-path ./build/win"
   }
 }
