@@ -23,7 +23,6 @@ rustc-ice-*.txt
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-oo2core_9_win64.dll
-oo2core_8_win64.dll
+*.dll
 liblinoodle.so
 liboodle-data-shared.so
