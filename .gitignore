@@ -24,5 +24,6 @@ rustc-ice-*.txt
 #.idea/
 
 oo2core_9_win64.dll
+oo2core_8_win64.dll
 liblinoodle.so
 liboodle-data-shared.so
