@@ -1,0 +1,21 @@
+[package]
+name = "pak-extract"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.102"
+chrono = "0.4.44"
+clap = { version = "4.6.1", features = ["derive"] }
+crc32fast = "1.5.0"
+env_logger = "0.11.10"
+filetime = "0.2.28"
+flate2 = "1.1.9"
+indicatif = "0.18.4"
+libloading = "0.9.0"
+log = "0.4.29"
+rayon = "1.12.0"
+rc-zip = "5.4.1"
+rc-zip-sync = "4.4.2"
+regex = "1.12.3"
+zip = "8.6.0"
