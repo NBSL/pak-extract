@@ -1,5 +1,5 @@
 use libloading::{Library, Symbol};
-use std::os::raw::{c_int, c_long, c_uint};
+use std::os::raw::c_int;
 use std::path::Path;
 
 type OodleLZDecompressFn = unsafe extern "C" fn(

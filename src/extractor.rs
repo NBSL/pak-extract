@@ -224,3 +224,65 @@ impl Extractor {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    // A mock Oodle struct just for tests that don't actually decompress
+    // Note: We can't instantiate real Oodle without the DLL, so we test Extractor
+    // regex compilation separately.
+    
+    fn create_test_cli() -> Cli {
+        Cli {
+            input: PathBuf::from("in"),
+            output: PathBuf::from("out"),
+            since: "2019-11-01".into(),
+            extension: vec!["txt".into()],
+            exclude: vec!["bak".into()],
+            regex: Some("test_.*".into()),
+            folders: vec!["data\\models".into(), "assets/textures".into()],
+            dds: false,
+            text: false,
+            db: false,
+            actionlist: false,
+            localization: false,
+            concurrent: None,
+            single: false,
+            skip: false,
+            crc: false,
+            debug: false,
+        }
+    }
+
+    #[test]
+    fn test_extractor_regex_compilation() {
+        // Since Oodle::new() attempts to load DLL, which might fail on CI,
+        // we only test the regex compilation using a helper or by bypassing Oodle.
+        // But since Extractor::new takes Arc<Oodle>, we can just test the Regex logic
+        // by manually extracting the building logic if needed, or by skipping full initialization.
+        let cli = create_test_cli();
+        
+        let extensions = cli.build_extensions();
+        let ext_pattern = format!(r"(?i)\.({})$", extensions.join("|").replace(".", ""));
+        let ext_regex = Regex::new(&ext_pattern).unwrap();
+        assert!(ext_regex.is_match("file.txt"));
+        assert!(!ext_regex.is_match("file.png"));
+
+        let excl_pattern = format!(r"(?i)\.({})$", cli.exclude.join("|").replace(".", ""));
+        let excl_regex = Regex::new(&excl_pattern).unwrap();
+        assert!(excl_regex.is_match("file.bak"));
+        assert!(!excl_regex.is_match("file.txt"));
+
+        let folder_pattern = format!(r"(?i)^{}.*", cli.folders.join("|").replace("\\", "/"));
+        let folder_regex = Regex::new(&folder_pattern).unwrap();
+        assert!(folder_regex.is_match("data/models/char.pak"));
+        assert!(folder_regex.is_match("assets/textures/diffuse.dds"));
+        assert!(!folder_regex.is_match("scripts/main.lua"));
+
+        let r = Regex::new(&format!("(?i){}", cli.regex.unwrap())).unwrap();
+        assert!(r.is_match("test_file.txt"));
+        assert!(!r.is_match("prod_file.txt"));
+    }
+}
