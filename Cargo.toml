@@ -2,6 +2,10 @@
 name = "pak-extract"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
+description = "A fast pak extractor for Oodle compressed New World .pak files"
+homepage = "https://github.com/nbsl/pak-extract"
+
 
 [[bin]]
 name = "pakextract"
