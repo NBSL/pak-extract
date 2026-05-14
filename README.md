@@ -9,7 +9,7 @@ This tool will parse `.pak` archives (which are zip containers) and extract thei
 1. **Rust / Cargo**: You need to have the Rust toolchain installed to build the project. Get it from [rustup.rs](https://rustup.rs/).
 2. **Oodle Shared Library**: This tool dynamically loads the Oodle decompression library at runtime. You must have the corresponding library for your platform in the directory you run the app from, or specify its path via the `OODLE_LIBRARY_PATH` environment variable.
     - **Windows**: `oo2core_8_win64.dll`
-    - **Linux**: `liblinoodle.so`
+    - **Linux**: `liblinoodle.so` with `oo2core_8_win64.dll`
 
 ## Building
 
