@@ -3,6 +3,10 @@ name = "pak-extract"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "pakextract"
+path = "src/main.rs"
+
 [dependencies]
 anyhow = "1.0.102"
 chrono = "0.4.44"
